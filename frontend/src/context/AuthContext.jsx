@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from "react";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {  // Changed to named export
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("userInfo");
     return storedUser ? JSON.parse(storedUser) : null;

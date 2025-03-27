@@ -1,23 +1,29 @@
 const express = require("express");
-const { getProducts, addProduct, updateProduct, deleteProduct } = require("../controllers/productController");
+const { 
+  getProducts, 
+  getProductById,  // Make sure this is imported
+  addProduct, 
+  updateProduct, 
+  deleteProduct 
+} = require("../controllers/productController");
 const { protect, admin } = require("../middleware/authMiddleware");
+const Product = require("../models/Product"); // Only needed if you're keeping the inline route
 
 const router = express.Router();
 
+// GET /api/products - Get all products
 router.get("/", getProducts);
+
+// GET /api/products/:id - Get single product by ID
+router.get("/:id", getProductById); // Using the controller function
+
+// POST /api/products - Create a product (Admin only)
 router.post("/", protect, admin, addProduct);
+
+// PUT /api/products/:id - Update a product (Admin only)
 router.put("/:id", protect, admin, updateProduct);
+
+// DELETE /api/products/:id - Delete a product (Admin only)
 router.delete("/:id", protect, admin, deleteProduct);
-router.get("/:id", async (req, res) => {
-    try {
-      const product = await Product.findById(req.params.id);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-      res.status(200).json(product);
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      res.status(500).json({ message: "Server error" });
-    }
-  });
+
 module.exports = router;

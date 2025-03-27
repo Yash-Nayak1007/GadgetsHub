@@ -27,23 +27,9 @@ const Navbar = () => {
           transition={{ duration: 0.5 }}
           className="text-2xl font-bold"
         >
-          <Link to="/">GadgetsHub</Link>
+          <Link to="/">Gadgets Zone</Link>
         </motion.div>
 
-        {/* Search Bar - Centered */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="hidden md:flex items-center bg-white text-gray-700 px-4 py-2 rounded-full shadow-md flex-1 max-w-lg mx-8"
-        >
-          <FiSearch className="text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search for products..."
-            className="bg-transparent focus:outline-none ml-2 w-full"
-          />
-        </motion.div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
@@ -53,6 +39,7 @@ const Navbar = () => {
           <Link to="/cart" className="hover:text-gray-300 transition flex items-center">
             <FiShoppingCart className="mr-1" /> Cart
           </Link>
+          <Link to="/wishlist" className="hover:text-gray-300 transition">Wishlist</Link>
 
           {/* User Dropdown */}
           {user ? (

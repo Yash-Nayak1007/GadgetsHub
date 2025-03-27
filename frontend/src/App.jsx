@@ -13,6 +13,15 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AnimatePresence, motion } from "framer-motion";
+import Footer from "./components/Footer";
+import { AddProducts } from "./pages/AddProducts";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Card from "./pages/Card";
+import WishlistPage from "./pages/WishlistPage ";
+import FAQPage from "./pages/Faq";
+import ProductCard from "./components/ProductCard";
+
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -21,13 +30,19 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+        <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
+        <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
         <Route path="/products" element={<PageWrapper><ProductList /></PageWrapper>} />
         <Route path="/products/:id" element={<PageWrapper><ProductDetails /></PageWrapper>} />
-        <Route path="/cart" element={<PageWrapper><Cart /></PageWrapper>} />
+        <Route path="/cart" element={<PageWrapper> < Cart/></PageWrapper>} />
+        <Route path="/card" element={<PageWrapper> < Card/></PageWrapper>}/>
         <Route path="/orders" element={<PageWrapper><Orders /></PageWrapper>} />
         <Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+        <Route path="/addproduct" element={<PageWrapper><AddProducts /></PageWrapper>} />
+        <Route path="/wishlist" element={<PageWrapper> <WishlistPage /></PageWrapper>} />
+        <Route path="/faq" element={<PageWrapper><FAQPage /></PageWrapper>}/>
         
         {/* Protected Routes */}
         <Route path="/checkout" element={<ProtectedRoute><PageWrapper><Checkout /></PageWrapper></ProtectedRoute>} />
@@ -56,7 +71,11 @@ function App() {
       <Router>
         <Navbar />
         <AnimatedRoutes />
+        <Footer/>
+        
+
       </Router>
+
     </AuthProvider>
   );
 }

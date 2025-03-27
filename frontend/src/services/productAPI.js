@@ -53,10 +53,31 @@ export const deleteProduct = async (id) => {
 };
 export const getProductById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${id}`);
-    return response.data;
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const response = await axios.get(`${API_URL}/api/products/${id}`);
+    
+    if (response.status === 400) {
+      throw new Error(response.data.message || "Invalid product ID format");
+    }
+    
+    if (response.status === 404) {
+      throw new Error("Product not found");
+    }
+    
+    return response;
   } catch (error) {
-    console.error("Error fetching product details:", error.response?.data?.message || error.message);
-    return null;
+    console.error('Error fetching product details:', error);
+    
+    // Enhanced error handling
+    if (error.response) {
+      // Server responded with error status
+      throw new Error(error.response.data.message || "Failed to fetch product");
+    } else if (error.request) {
+      // Request was made but no response
+      throw new Error("No response from server. Please check your connection.");
+    } else {
+      // Other errors
+      throw new Error("Failed to fetch product details");
+    }
   }
 };

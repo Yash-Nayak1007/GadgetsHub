@@ -1,40 +1,53 @@
 import axios from "axios";
 
-// Set your backend API base URL
-const API_URL = "http://your-backend-url.com/api/cart"; 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/cart";
 
-// Function to get cart items
 export const getCart = async (userId) => {
   try {
-    const response = await axios.get(`${API_URL}/${userId}`);
-    return response.data; // Returns cart data
+    const { data } = await axios.get(`${API_URL}/${userId}`);
+    return data.items || [];
   } catch (error) {
     console.error("Error fetching cart:", error);
-    return [];
+    throw error;
   }
 };
 
-// Function to update the quantity of a cart item
+export const addToCart = async (userId, product) => {
+  try {
+    const { data } = await axios.post(`${API_URL}/add`, {
+      userId,
+      productId: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: 1
+    });
+    return data;
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    throw error;
+  }
+};
+
 export const updateCartItem = async (itemId, amount) => {
   try {
-    const response = await axios.patch(`${API_URL}/update`, {
+    const { data } = await axios.patch(`${API_URL}/update`, {
       itemId,
       amount
     });
-    return response.data; // Returns updated cart item data
+    return data;
   } catch (error) {
     console.error("Error updating cart item:", error);
-    return null;
+    throw error;
   }
 };
 
-// Function to remove an item from the cart
 export const removeCartItem = async (itemId) => {
   try {
-    const response = await axios.delete(`${API_URL}/remove/${itemId}`);
-    return response.data.success; // Returns a success status (true/false)
+    await axios.delete(`${API_URL}/remove/${itemId}`);
+    return true;
   } catch (error) {
     console.error("Error removing cart item:", error);
-    return false;
+    throw error;
   }
 };
