@@ -60,8 +60,8 @@ const ProductList = () => {
       )
       .filter((product) => {
         if (category === "all") return true;
-        if (!product.categories) return false;
-        return product.categories.trim().toLowerCase() === category.trim().toLowerCase();
+        if (!product.category) return false;
+        return product.category.trim().toLowerCase() === category.trim().toLowerCase();
       })
       .sort((a, b) => {
         if (sortOption === "priceLow") return a.price - b.price;

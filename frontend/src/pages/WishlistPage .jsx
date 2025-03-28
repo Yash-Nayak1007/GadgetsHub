@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { FaHeartBroken, FaShoppingBag, FaTrash, FaSpinner } from 'react-icons/fa';
+import { FaHeartBroken, FaShoppingBag, FaTrash, FaSpinner, FaCheck } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { addToCart, getSessionId } from '../services/cartAPI';
 
 const WishlistPage = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [removing, setRemoving] = useState(null);
+  const [addingToCart, setAddingToCart] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,20 +22,14 @@ const WishlistPage = () => {
         setError(null);
         
         const response = await axios.get('http://localhost:5000/api/wishlist');
-        // console.log('API Response Data:', response.data); // Debug log
-
-        // Enhanced response validation
-        if (!response.data) {
-          throw new Error('No data received from server');
-        }
-
-        // Handle both possible response structures
+        
+        // Handle different response structures
         let items = [];
         if (response.data.status === 'success') {
           items = response.data.data?.items || [];
         } else if (Array.isArray(response.data)) {
           items = response.data;
-        } else if (response.data.items && Array.isArray(response.data.items)) {
+        } else if (response.data.items) {
           items = response.data.items;
         }
 
@@ -41,14 +39,11 @@ const WishlistPage = () => {
 
         setWishlistItems(items);
       } catch (error) {
-        // console.error("Error fetching wishlist:", error);
         setError(
           error.response?.data?.message || 
-          error.response?.data?.error || 
           error.message || 
           'Failed to load wishlist'
         );
-        setWishlistItems([]); // Reset to empty array on error
       } finally {
         setLoading(false);
       }
@@ -60,54 +55,65 @@ const WishlistPage = () => {
   const removeFromWishlist = async (productId) => {
     try {
       setRemoving(productId);
-      const response = await axios.delete(`http://localhost:5000/api/wishlist/${productId}`);
-      
-      // Flexible success check
-      if (response.status === 200 || response.data?.status === 'success') {
-        setWishlistItems(prev => prev.filter(item => item.productId !== productId));
-      } else {
-        throw new Error(response.data?.message || 'Failed to remove item');
-      }
+      await axios.delete(`http://localhost:5000/api/wishlist/${productId}`);
+      setWishlistItems(prev => prev.filter(item => item.productId !== productId));
+      toast.success('Item removed from wishlist');
     } catch (error) {
-      console.error("Error removing item:", error);
-      setError(
+      toast.error(
         error.response?.data?.message || 
-        error.response?.data?.error || 
-        error.message || 
-        'Failed to remove item'
+        'Failed to remove item from wishlist'
       );
     } finally {
       setRemoving(null);
     }
   };
 
-  const handleBrowseProducts = () => navigate('/products');
-
   const handleAddToCart = async (product) => {
     try {
-      // Example implementation - adjust according to your API
-      const response = await axios.post('http://localhost:5000/api/cart', {
-        productId: product.productId,
+      setAddingToCart(product.productId);
+      const sessionId = getSessionId();
+      
+      // Prepare product data for cart
+      const cartItem = {
+        sessionId,
+        productId: product.productId || product.id,
         name: product.name,
         price: product.price,
-        image: product.image
-      });
-      
-      if (response.data?.status === 'success') {
-        alert(`${product.name} added to cart!`);
-      } else {
-        throw new Error(response.data?.message || 'Failed to add to cart');
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      setError(
-        error.response?.data?.message || 
-        error.response?.data?.error || 
-        error.message || 
-        'Failed to add to cart'
+        image: product.image,
+        quantity: 1
+      };
+
+      // Add to cart
+      await addToCart(cartItem);
+
+      // Remove from wishlist after adding to cart
+      await axios.delete(`http://localhost:5000/api/wishlist/${product.productId}`);
+      setWishlistItems(prev => prev.filter(item => item.productId !== product.productId));
+
+      toast.success(
+        <div className="flex items-center">
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            className="w-8 h-8 object-cover rounded mr-2"
+            onError={(e) => e.target.src = 'https://via.placeholder.com/40'}
+          />
+          <span>{product.name} added to cart</span>
+        </div>,
+        { position: "top-right", autoClose: 2000 }
       );
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || 
+        'Failed to add item to cart',
+        { position: "top-right" }
+      );
+    } finally {
+      setAddingToCart(null);
     }
   };
+
+  const handleBrowseProducts = () => navigate('/products');
 
   if (loading) {
     return (
@@ -178,17 +184,17 @@ const WishlistPage = () => {
                       alt={product.name}
                       className="w-full h-48 object-cover"
                       onError={(e) => {
-                        e.target.src = `https://robohash.org/${product._id}.png?set=set2`;
+                        e.target.src = `https://via.placeholder.com/300?text=${product.name}`;
                         e.target.className = 'w-full h-48 object-cover bg-gray-200';
                       }}
                     />
                     <button
-                      onClick={() => removeFromWishlist(product.productId)}
-                      disabled={removing === product.productId}
+                      onClick={() => removeFromWishlist(product.productId || product.id)}
+                      disabled={removing === (product.productId || product.id)}
                       className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition"
                       aria-label="Remove from wishlist"
                     >
-                      {removing === product.productId ? (
+                      {removing === (product.productId || product.id) ? (
                         <FaSpinner className="animate-spin text-red-500" />
                       ) : (
                         <FaTrash className="text-red-500" />
@@ -203,10 +209,24 @@ const WishlistPage = () => {
                     </p>
                     <button
                       onClick={() => handleAddToCart(product)}
-                      className="w-full flex items-center justify-center py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition"
+                      disabled={addingToCart === (product.productId || product.id)}
+                      className={`w-full flex items-center justify-center py-2 px-4 ${
+                        addingToCart === (product.productId || product.id) 
+                          ? 'bg-green-500' 
+                          : 'bg-blue-500 hover:bg-blue-600'
+                      } text-white rounded-lg transition`}
                     >
-                      <FaShoppingBag className="mr-2" />
-                      Add to Cart
+                      {addingToCart === (product.productId || product.id) ? (
+                        <>
+                          <FaCheck className="mr-2" />
+                          Added!
+                        </>
+                      ) : (
+                        <>
+                          <FaShoppingBag className="mr-2" />
+                          Add to Cart
+                        </>
+                      )}
                     </button>
                   </div>
                 </motion.div>

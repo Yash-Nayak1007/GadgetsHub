@@ -78,7 +78,7 @@ const Contact = () => {
         <h2 className="text-2xl font-semibold text-blue-500 mb-4">Customer Support</h2>
         <p>Email: <a href="mailto:support@gadgetzone.com" className="text-indigo-600 hover:underline">support@gadgetzone.com</a></p>
         <p>Phone: <span className="text-gray-700">+1 (800) 123-4567</span></p>
-        <p>Address: 123 Tech Street, Silicon Valley, CA</p>
+        <p>Address: 123 Tech Street, Silicon Valley,CA</p>
       </div>
     </motion.div>
   );

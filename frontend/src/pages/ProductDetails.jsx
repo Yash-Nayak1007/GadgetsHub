@@ -3,96 +3,135 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiStar, FiShoppingCart, FiArrowLeft } from "react-icons/fi";
 import { getProductById } from "../services/productAPI";
+import { addToCart } from "../services/cartAPI";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
 
-const ProductDetails = ({ addToCart }) => {
+const ProductDetails = ({ updateCart }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cartLoading, setCartLoading] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await getProductById(id);
-        
+
         if (!response?.data) {
-          throw new Error("Received empty product data");
+          throw new Error("Product not found");
         }
-        
+
+        if (!response.data._id || !response.data.name || !response.data.price) {
+          throw new Error("Invalid product data received");
+        }
+
         setProduct(response.data);
       } catch (err) {
         console.error("Error fetching product:", err);
-        
-        let errorMessage = err.message;
-        if (err.response?.status === 400) {
-          errorMessage = "Invalid product ID - please check the URL";
-        } else if (err.message.includes('Network Error')) {
-          errorMessage = "Cannot connect to server. Please try again later.";
+
+        let errorMessage = "Failed to load product details";
+        if (err.response?.status === 404) {
+          errorMessage = "Product not found";
+        } else if (err.response?.status === 400) {
+          errorMessage = "Invalid product ID";
+        } else if (err.message.includes("Network Error")) {
+          errorMessage = "Network error. Please check your connection.";
         }
-        
+
         setError(errorMessage);
         toast.error(errorMessage, {
           position: "top-right",
-          autoClose: 5000
+          autoClose: 5000,
         });
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchProduct();
   }, [id]);
 
-  const handleAddToCart = async() => {
-    try {
-      const res = await axios.post("/api/cart/add")
-      console.log(res)
-      setCartLoading(true);
-      
-      if (!product) {
-        throw new Error("Product data not available");
-      }
-      
-      if (addToCart) {
-        addToCart(product);
-      } else {
-        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        const existingItem = cart.find(item => item._id === product._id);
-        
-        if (existingItem) {
-          existingItem.quantity += 1;
-        } else {
-          cart.push({ 
-            _id: product._id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            quantity: 1 
-          });
-        }
-        
-        localStorage.setItem("cart", JSON.stringify(cart));
-      }
-      
-      toast.success(`${product.name} added to cart!`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
-    } catch (err) {
-      console.error("Error adding to cart:", err);
-      toast.error(err.message || "Failed to add to cart");
-    } finally {
-      setCartLoading(false);
+  const handleAddToCart = async () => {
+  try {
+    setCartLoading(true);
+
+    // Get or create session ID
+    let sessionId = localStorage.getItem("sessionId");
+    if (!sessionId) {
+      sessionId =
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+      localStorage.setItem("sessionId", sessionId);
     }
-  };
+
+    const response = await addToCart({
+      sessionId,
+      productId: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: quantity,
+    });
+
+    if (response.success) {
+      toast.success(
+        <div className="flex items-start">
+          <img 
+            src={product.image || `https://via.placeholder.com/100?text=${encodeURIComponent(product.name)}`} 
+            alt={product.name}
+            className="w-12 h-12 object-contain mr-3 rounded"
+          />
+          <div>
+            <p className="font-semibold">
+              {quantity > 1 ? `${quantity} ${product.name}s` : product.name} added to cart!
+            </p>
+            <p className="text-sm text-gray-600">
+              ${(product.price * quantity).toFixed(2)} total
+            </p>
+            <button 
+              onClick={() => {
+                navigate("/cart");
+                toast.dismiss();
+              }}
+              className="mt-1 text-sm text-blue-500 hover:underline"
+            >
+              View Cart
+            </button>
+          </div>
+        </div>,
+        {
+          position: "top-right",
+          autoClose: 5000,
+          closeButton: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          className: "!bg-white !text-gray-800 !shadow-lg !rounded-lg",
+          bodyClassName: "!p-4",
+        }
+      );
+      if (updateCart) {
+        updateCart();
+      }
+    }
+  } catch (err) {
+    console.error("Error adding to cart:", err);
+    toast.error(err.response?.data?.message || "Failed to add to cart", {
+      position: "top-right",
+      autoClose: 3000,
+      className: "!bg-red-50 !text-red-800",
+    });
+  } finally {
+    setCartLoading(false);
+  }
+};
 
   if (loading) {
     return (
@@ -141,12 +180,20 @@ const ProductDetails = ({ addToCart }) => {
             transition={{ duration: 0.5 }}
           >
             <img
-              src={product.image}
+              src={
+                product.image ||
+                `https://via.placeholder.com/500?text=${encodeURIComponent(
+                  product.name
+                )}`
+              }
               alt={product.name}
               className="w-full h-auto max-h-[500px] object-contain p-4"
               onError={(e) => {
-                e.target.src = `https://robohash.org/${product._id || 'default'}.png?set=set2`;
-                e.target.className = "w-full h-auto max-h-[500px] object-cover bg-gray-200 p-4";
+                e.target.src = `https://via.placeholder.com/500?text=${encodeURIComponent(
+                  product.name
+                )}`;
+                e.target.className =
+                  "w-full h-auto max-h-[500px] object-cover bg-gray-200 p-4";
               }}
             />
           </motion.div>
@@ -163,49 +210,80 @@ const ProductDetails = ({ addToCart }) => {
 
             <div className="flex items-center gap-4 mb-4">
               <p className="text-2xl font-bold text-blue-600">
-                ${product.price?.toFixed(2)}
+                ${product.price.toFixed(2)}
               </p>
-              {product.oldPrice && (
+              {product.oldPrice && product.oldPrice > product.price && (
                 <>
                   <p className="text-lg text-gray-500 line-through">
                     ${product.oldPrice.toFixed(2)}
                   </p>
                   <span className="text-sm bg-red-100 text-red-600 px-2 py-1 rounded">
-                    {Math.round((1 - product.price/product.oldPrice) * 100)}% OFF
+                    {Math.round((1 - product.price / product.oldPrice) * 100)}%
+                    OFF
                   </span>
                 </>
               )}
             </div>
 
-            <div className="flex items-center mb-6">
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <FiStar
-                    key={i}
-                    className={`w-5 h-5 ${i < Math.round(product.rating || 0) ? "fill-current" : ""}`}
-                  />
-                ))}
+            {product.rating && (
+              <div className="flex items-center mb-6">
+                <div className="flex text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <FiStar
+                      key={i}
+                      className={`w-5 h-5 ${
+                        i < Math.round(product.rating) ? "fill-current" : ""
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="ml-2 text-gray-600">
+                  {product.rating.toFixed(1)}/5{" "}
+                  {product.reviewCount
+                    ? `(${product.reviewCount} reviews)`
+                    : ""}
+                </span>
               </div>
-              <span className="ml-2 text-gray-600">
-                {product.rating || 0}/5 ({product.reviewCount || 0} reviews)
-              </span>
+            )}
+
+            <div className="mb-6">
+              <div className="flex items-center mb-4">
+                <button
+                  onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                  className="px-3 py-1 bg-gray-200 rounded-l hover:bg-gray-300"
+                  disabled={quantity <= 1}
+                >
+                  -
+                </button>
+                <span className="px-4 py-1 bg-gray-100 border-t border-b border-gray-200">
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => setQuantity((prev) => prev + 1)}
+                  className="px-3 py-1 bg-gray-200 rounded-r hover:bg-gray-300"
+                >
+                  +
+                </button>
+              </div>
             </div>
 
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                Description
-              </h3>
-              <p className="text-gray-600">{product.description || "No description available"}</p>
-            </div>
+            {product.description && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  Description
+                </h3>
+                <p className="text-gray-600">{product.description}</p>
+              </div>
+            )}
 
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleAddToCart}
-              disabled={cartLoading}
+              disabled={cartLoading || product.stock <= 0}
               className={`w-full bg-gradient-to-r from-blue-500 to-teal-500 text-white py-3 px-6 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 ${
-                cartLoading ? 'opacity-75 cursor-not-allowed' : ''
-              }`}
+                cartLoading ? "opacity-75 cursor-not-allowed" : ""
+              } ${product.stock <= 0 ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {cartLoading ? (
                 <>
@@ -215,23 +293,37 @@ const ProductDetails = ({ addToCart }) => {
               ) : (
                 <>
                   <FiShoppingCart className="w-5 h-5" />
-                  Add to Cart
+                  {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
                 </>
               )}
             </motion.button>
 
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="grid grid-cols-2 gap-4">
+                {product.category && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">
+                      Category
+                    </h4>
+                    <p className="text-gray-800 capitalize">
+                      {product.category}
+                    </p>
+                  </div>
+                )}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500">Category</h4>
-                  <p className="text-gray-800 capitalize">{product.category || "N/A"}</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Availability</h4>
-                  <p className={`font-medium ${
-                    product.stock > 0 ? "text-green-600" : "text-red-600"
-                  }`}>
-                    {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                  <h4 className="text-sm font-medium text-gray-500">
+                    Availability
+                  </h4>
+                  <p
+                    className={`font-medium ${
+                      product.stock > 0 ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {product.stock > 0
+                      ? `${product.stock} ${
+                          product.stock === 1 ? "item" : "items"
+                        } available`
+                      : "Out of Stock"}
                   </p>
                 </div>
                 {product.brand && (

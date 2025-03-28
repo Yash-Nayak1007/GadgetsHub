@@ -81,3 +81,15 @@ export const getProductById = async (id) => {
     }
   }
 };
+
+export const getRelatedProducts = async (category, excludeId) => {
+  try {
+    const response = await axios.get(`${API_URL}/related`, {
+      params: { category, excludeId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching related products:", error);
+    return []; // Return empty array if error occurs
+  }
+};

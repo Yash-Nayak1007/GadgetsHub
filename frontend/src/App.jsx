@@ -23,6 +23,7 @@ import FAQPage from "./pages/Faq";
 import ProductCard from "./components/ProductCard";
 
 
+
 const AnimatedRoutes = () => {
   const location = useLocation();
 
@@ -43,10 +44,20 @@ const AnimatedRoutes = () => {
         <Route path="/addproduct" element={<PageWrapper><AddProducts /></PageWrapper>} />
         <Route path="/wishlist" element={<PageWrapper> <WishlistPage /></PageWrapper>} />
         <Route path="/faq" element={<PageWrapper><FAQPage /></PageWrapper>}/>
+        {/* <Route 
+          path="/vendor/dashboard" 
+          element={
+            <ProtectedRoute vendorOnly>
+              <PageWrapper><VendorDashboard/></PageWrapper>
+            </ProtectedRoute>
+          } 
+        /> */}
+        
         
         {/* Protected Routes */}
         <Route path="/checkout" element={<ProtectedRoute><PageWrapper><Checkout /></PageWrapper></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute adminOnly><PageWrapper><AdminDashboard /></PageWrapper></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><AdminDashboard/></ProtectedRoute>}/>
       </Routes>
     </AnimatePresence>
   );

@@ -37,19 +37,19 @@ const Home = () => {
 
   const carouselImages = [
     {
-      src: "/src/assets/one.jpg",
-      alt: "Wireless Headphones - Ultimate Sound Experience",
+      src: "https://files.oaiusercontent.com/file-Rmn8j9PtyRjgqVH6hvrTSW?se=2025-03-27T12%3A44%3A39Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D11704589-7e07-4352-8794-63f7c0e7df01.webp&sig=CBirVGgvNAQAeTj3SasgquLhTP9RCXL3UpjFQSIRAiU%3D",
+      alt: "GADGETS - Ultimate Experience",
     },
     {
-      src: "/src/assets/two.jpg",
-      alt: "Latest Smartphones - Cutting-Edge Technology",
+      src: "https://images.macrumors.com/article-new/2019/02/MR-Future-Products-2020-2.png",
+      alt: "Latest Products - Cutting-Edge Technology",
     },
     {
-      src: "/src/assets/three.jpg",
+      src: "https://decider.com/wp-content/uploads/2021/02/Oculus-Quest-2-.jpg?quality=90&strip=all&w=1284&h=856&crop=1",
       alt: "VR Gaming - Step into the Future",
     },
     {
-      src: "/src/assets/four.jpg",
+      src: "https://img.freepik.com/premium-vector/3d-banner-realistic-accessories-mobile-game-console-controller-headphones-joystick-smart-watches_555677-523.jpg?w=996",
       alt: "Advanced VR Headsets - Next Level Immersion",
     },
   ];
@@ -61,7 +61,7 @@ const Home = () => {
       name: "Smartwatch Series X",
       price: 129.99,
       description: "Advanced smartwatch with health monitoring and GPS tracking",
-      image: "https://cdn.pixabay.com/photo/2019/10/02/06/43/smartwatch-4518536_1280.jpg",
+      image:"https://images.unsplash.com/photo-1542541864-4abf21a55761?q=80&w=1003&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "wearables",
     },
     {
@@ -70,7 +70,7 @@ const Home = () => {
       name: "Wireless Earbuds Pro",
       price: 89.99,
       description: "Premium noise-cancelling wireless earbuds with 24h battery",
-      image: "https://cdn.pixabay.com/photo/2020/02/22/17/22/headphones-4878176_1280.jpg",
+      image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?q=80&w=989&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "audio",
     },
     {
@@ -79,7 +79,7 @@ const Home = () => {
       name: "4K Action Camera",
       price: 199.99,
       description: "Waterproof action camera with 4K/60fps video recording",
-      image: "https://cdn.pixabay.com/photo/2016/11/29/11/15/action-1867171_1280.jpg",
+      image: "https://images.unsplash.com/photo-1606986628470-26a67fa4730c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "cameras",
     },
     {
@@ -88,7 +88,7 @@ const Home = () => {
       name: "Gaming Mouse RGB",
       price: 49.99,
       description: "High-precision gaming mouse with customizable RGB lighting",
-      image: "https://cdn.pixabay.com/photo/2017/07/11/18/31/mouse-2499700_1280.jpg",
+      image: "https://images.unsplash.com/photo-1628832307345-7404b47f1751?q=80&w=1183&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "accessories",
     },
     {
@@ -97,7 +97,7 @@ const Home = () => {
       name: "Portable Bluetooth Speaker",
       price: 59.99,
       description: "Waterproof Bluetooth speaker with 20h playtime",
-      image: "https://cdn.pixabay.com/photo/2018/07/21/05/14/bluetooth-3553871_1280.jpg",
+      image: "https://images.unsplash.com/photo-1589003077984-894e133dabab?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "audio",
     },
   ];
@@ -110,7 +110,7 @@ const Home = () => {
       oldPrice: 999.99,
       price: 799.99,
       description: "Flagship smartphone with 5G, 120Hz display, and triple camera",
-      image: "https://cdn.pixabay.com/photo/2021/09/07/13/08/iphone-6604385_1280.jpg",
+      image: "https://images.unsplash.com/photo-1575695342320-d2d2d2f9b73f?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "phones",
     },
     {
@@ -120,7 +120,7 @@ const Home = () => {
       oldPrice: 599.99,
       price: 499.99,
       description: "Next-gen gaming console with 4K HDR and ray tracing",
-      image: "https://cdn.pixabay.com/photo/2020/08/19/13/12/controller-5501621_1280.jpg",
+      image: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?q=80&w=1227&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "gaming",
     },
     {
@@ -130,7 +130,7 @@ const Home = () => {
       oldPrice: 349.99,
       price: 249.99,
       description: "Immersive VR headset with 6DOF tracking and controllers",
-      image: "https://cdn.pixabay.com/photo/2017/07/07/13/18/vr-2481974_1280.jpg",
+      image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "gaming",
     },
     {
@@ -140,45 +140,58 @@ const Home = () => {
       oldPrice: 199.99,
       price: 149.99,
       description: "Control your smart home devices with voice commands",
-      image: "https://cdn.pixabay.com/photo/2018/01/17/07/49/alexa-3082435_1280.jpg",
+      image: "https://images.unsplash.com/photo-1568910748155-01ca989dbdd6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       category: "smart-home",
     },
   ];
 
   return (
     <div className="bg-gray-100 text-gray-900 min-h-screen">
-      {/* Carousel Section */}
-      <section className="relative w-full h-[30vh] overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-black/60 to-transparent z-10" />
-        <Carousel
-          autoPlay
-          infiniteLoop
-          showThumbs={false}
-          showStatus={false}
-          interval={5000}
-          className="relative z-0"
-        >
-          {carouselImages.map((image, index) => (
-            <div key={index} className="relative w-full h-[30vh] overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10" />
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-full object-cover transform -skew-y-6"
-              />
-              <div className="absolute bottom-5 left-5 text-white z-20">
-                <h2 className="text-xl md:text-2xl font-bold">{image.alt}</h2>
-                <button 
-                  className="mt-2 bg-blue-500 px-4 py-2 text-sm font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition"
-                  onClick={() => navigate('/products')}
-                >
-                  Shop Now
-                </button>
-              </div>
-            </div>
-          ))}
-        </Carousel>
-      </section>
+    
+     {/* Carousel Section */}
+<section className="relative w-full h-[30vh] md:h-[50vh] overflow-hidden">
+  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-black/60 to-transparent z-10" />
+  <Carousel
+    autoPlay
+    infiniteLoop
+    showThumbs={false}
+    showStatus={false}
+    interval={5000}
+    className="relative z-0"
+  >
+    {carouselImages.map((image, index) => (
+      <div key={index} className="relative w-full h-[20vh] md:h-[50vh] overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10" />
+        <img
+          src={image.src}
+          alt={image.alt}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute bottom-10 left-10 text-white z-20 space-y-4">
+          <motion.h2 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-2xl md:text-4xl font-bold max-w-md"
+          >
+            {image.alt}
+          </motion.h2>
+          <motion.button 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mt-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 text-lg font-semibold rounded-lg shadow-lg transition"
+            onClick={() => navigate('/products')}
+          >
+            Shop Now
+          </motion.button>
+        </div>
+      </div>
+    ))}
+  </Carousel>
+</section>
 
       {/* Trending Products */}
       <section className="container mx-auto py-12 px-6">
